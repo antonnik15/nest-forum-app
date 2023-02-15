@@ -21,7 +21,7 @@ export class Blog {
   @Prop({ required: true, default: new Date().toISOString() })
   createdAt: string;
 
-  @Prop({ default: true })
+  @Prop({ default: false })
   isMembership: boolean;
 
   updateBlog(dto: UpdateBlogDto) {

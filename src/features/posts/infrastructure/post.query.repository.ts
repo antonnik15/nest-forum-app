@@ -12,14 +12,15 @@ export class PostQueryRepository {
     private postViewModelMapper: PostViewModelMapper,
   ) {}
   async getAllPosts(queryObj: PostQueryObj) {
-    const posts = await this.postModel
-      .find()
+    const postsReq = this.postModel.find();
+    const countDocuments = await postsReq.countDocuments();
+    const posts = await postsReq
       .sort(queryObj.sortDirection)
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])
       .exec();
-    return this.postViewModelMapper.createPostArray(posts);
+    return this.postViewModelMapper.createPostArray(posts, countDocuments);
   }
 
   async findPostById(id: string) {
@@ -29,13 +30,14 @@ export class PostQueryRepository {
   }
 
   async findPostByBlogId(blogId: string, queryObj: PostQueryObj) {
-    const posts = await this.postModel
-      .find({ blogId: blogId })
+    const postsReq = this.postModel.find({ blogId: blogId });
+    const countDocuments = await postsReq.countDocuments();
+    const posts = await postsReq
       .sort(queryObj.sortDirection)
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])
       .exec();
-    return this.postViewModelMapper.createPostArray(posts);
+    return this.postViewModelMapper.createPostArray(posts, countDocuments);
   }
 }

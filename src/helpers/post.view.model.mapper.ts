@@ -9,8 +9,11 @@ export class PostViewModelMapper {
   constructor(
     @InjectModel(Like.name) private likesModel: Model<LikeDocument>,
   ) {}
-  async createPostArray(postArray: Post[]) {
-    return Promise.all(postArray.map((p) => this.mapPostToViewModel(p)));
+  async createPostArray(postArray: Post[], countDoc: number) {
+    return {
+      postArray: Promise.all(postArray.map((p) => this.mapPostToViewModel(p))),
+      countDocuments: countDoc,
+    };
   }
   async mapPostToViewModel(post: Post) {
     return {
