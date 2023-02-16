@@ -36,8 +36,7 @@ export class BlogsController {
   @Get()
   async getBlogs(@Query() query: BlogsQueryObj): Promise<BlogOutPutObject> {
     const queryObj: BlogsQueryObj = new BlogsQueryObj(query);
-    const blogsArray = await this.blogsQueryRepository.getAllBlogs(queryObj);
-    return new BlogOutPutObject(queryObj, blogsArray);
+    return await this.blogsQueryRepository.getAllBlogs(queryObj);
   }
 
   @Post()
@@ -70,7 +69,7 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Query() query: PostQueryObj,
   ): Promise<PostOutputObject> {
-    const blog = this.blogsQueryRepository.getBlogById(blogId);
+    const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     const queryObj: PostQueryObj = new PostQueryObj(query);
     return await this.postQueryRepository.findPostByBlogId(blogId, queryObj);

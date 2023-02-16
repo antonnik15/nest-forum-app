@@ -7,11 +7,11 @@ export class BlogOutPutObject {
   private totalCount: number;
   items: Blog[];
   private pageSize: number;
-  constructor(queryObj: BlogsQueryObj, blogArray: Blog[]) {
-    this.pagesCount = Math.ceil(blogArray.length / +queryObj.pageSize);
+  constructor(queryObj: BlogsQueryObj, blogArray: Blog[], countDoc: number) {
+    this.pagesCount = Math.ceil(countDoc / +queryObj.pageSize);
     this.page = +queryObj.pageNumber;
     this.pageSize = +queryObj.pageSize;
-    this.totalCount = blogArray.length;
+    this.totalCount = countDoc;
     this.items = blogArray;
   }
 }

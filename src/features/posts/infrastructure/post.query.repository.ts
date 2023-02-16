@@ -26,11 +26,11 @@ export class PostQueryRepository {
   }
 
   async findPostByBlogId(blogId: string, queryObj: PostQueryObj) {
-    const countDocuments = await this.postModel.find().countDocuments();
     const filter = { blogId: blogId };
+    const countDocuments = await this.postModel.find(filter).countDocuments();
     const posts = await this.getPostByFilter(filter, queryObj);
 
-    const postsArray = this.postViewModelMapper.createPostArray(posts);
+    const postsArray = await this.postViewModelMapper.createPostArray(posts);
     return new PostOutputObject(queryObj, postsArray, countDocuments);
   }
 
