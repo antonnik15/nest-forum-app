@@ -15,7 +15,7 @@ export class PostQueryRepository {
   async getAllPosts(queryObj: PostQueryObj) {
     const countDocuments = await this.postModel.find().countDocuments();
     const posts = await this.getPostByFilter({}, queryObj);
-    const postsArray = this.postViewModelMapper.createPostArray(posts);
+    const postsArray = await this.postViewModelMapper.createPostArray(posts);
     return new PostOutputObject(queryObj, postsArray, countDocuments);
   }
 

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { randomUUID } from 'crypto';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
@@ -8,7 +9,7 @@ export class Comment {
   @Prop({
     required: true,
     unique: true,
-    default: (+new Date()).toString(),
+    default: randomUUID,
     type: String,
   })
   id: string;
@@ -25,7 +26,11 @@ export class Comment {
   @Prop({ required: true, type: String })
   userLogin: string;
 
-  @Prop({ required: true, type: String, default: (+new Date()).toString() })
+  @Prop({
+    required: true,
+    type: String,
+    default: () => new Date().toISOString(),
+  })
   createdAt: string;
 }
 

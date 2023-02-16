@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UpdateBlogDto } from '../../api/dto/update.blog.dto';
+import { randomUUID } from 'crypto';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
-  @Prop({ required: true, default: (+new Date()).toString() })
+  @Prop({ required: true, default: randomUUID })
   id: string;
 
   @Prop({ required: true })
@@ -18,7 +19,7 @@ export class Blog {
   @Prop({ required: true })
   websiteUrl: string;
 
-  @Prop({ required: true, default: new Date().toISOString() })
+  @Prop({ required: true, default: () => new Date().toISOString() })
   createdAt: string;
 
   @Prop({ default: false })

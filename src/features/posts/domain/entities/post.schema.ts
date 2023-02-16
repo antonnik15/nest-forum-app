@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UpdatePostDto } from '../../api/dto/update.post.dto';
+import { randomUUID } from 'crypto';
 
 export type PostDocument = HydratedDocument<Post>;
 
 @Schema()
 export class Post {
-  @Prop({ required: true, default: (+new Date()).toString() })
+  @Prop({ required: true, unique: true, default: randomUUID })
   id: string;
 
   @Prop({ required: true })
@@ -24,7 +25,7 @@ export class Post {
   @Prop({ required: true })
   blogName: string;
 
-  @Prop({ required: true, default: new Date().toISOString() })
+  @Prop({ required: true, default: () => new Date().toISOString() })
   createdAt: string;
 
   updatePost(dto: UpdatePostDto) {
@@ -32,7 +33,6 @@ export class Post {
     this.shortDescription = dto.shortDescription;
     this.content = dto.content;
     this.blogId = dto.blogId;
-    this;
     this.blogName = dto.blogName;
   }
 
