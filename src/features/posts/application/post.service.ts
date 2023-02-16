@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from '../api/dto/create.post.dto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogQueryRepository } from '../../blogs/infrastructure/blog-query-repository.service';
@@ -39,6 +39,7 @@ export class PostService {
 
   async addBlogNameToDto(dto: CreatePostDto | UpdatePostDto) {
     const blogById = await this.blogsQueryRepository.getBlogById(dto.blogId);
+    if (!blogById) throw new NotFoundException();
     dto.blogName = blogById.name;
     dto.blogId = blogById.id;
   }

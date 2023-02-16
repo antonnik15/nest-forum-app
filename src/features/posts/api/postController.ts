@@ -15,7 +15,6 @@ import { PostQueryObj } from './dto/post.query.obj';
 import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { CreatePostDto } from './dto/create.post.dto';
 import { PostService } from '../application/post.service';
-import { PostOutputObject } from './dto/post.output.object';
 import { UpdatePostDto } from './dto/update.post.dto';
 import { CommentsQueryObj } from '../../comments/api/dto/comments.query.obj';
 import { CommentQueryRepository } from '../../comments/infrastructure/comment-query-repository.service';
@@ -32,8 +31,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   async getPosts(@Query() query: PostQueryObj) {
     const queryObj = new PostQueryObj(query);
-    const postsArray = await this.postQueryRepository.getAllPosts(queryObj);
-    return new PostOutputObject(queryObj, postsArray);
+    return await this.postQueryRepository.getAllPosts(queryObj);
   }
 
   @Post()

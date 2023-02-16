@@ -69,15 +69,11 @@ export class BlogsController {
   async findPostForCertainBlog(
     @Param('blogId') blogId: string,
     @Query() query: PostQueryObj,
-  ) {
+  ): Promise<PostOutputObject> {
     const blog = this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     const queryObj: PostQueryObj = new PostQueryObj(query);
-    const postArray = await this.postQueryRepository.findPostByBlogId(
-      blogId,
-      queryObj,
-    );
-    return new PostOutputObject(queryObj, postArray);
+    return await this.postQueryRepository.findPostByBlogId(blogId, queryObj);
   }
 
   @Post(':blogId/posts')

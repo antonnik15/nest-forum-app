@@ -7,11 +7,11 @@ export class PostOutputObject {
   private totalCount: number;
   private pageSize: number;
   items: Post[];
-  constructor(queryObj: PostQueryObj, postsArray: any) {
-    this.pagesCount = Math.ceil(postsArray.length / +queryObj.pageSize);
+  constructor(queryObj: PostQueryObj, postsArray: any, countDoc: number) {
+    this.pagesCount = Math.ceil(countDoc / +queryObj.pageSize);
     this.page = +queryObj.pageNumber;
     this.pageSize = +queryObj.pageSize;
-    this.totalCount = postsArray.length;
+    this.totalCount = countDoc;
     this.items = postsArray;
   }
 }
