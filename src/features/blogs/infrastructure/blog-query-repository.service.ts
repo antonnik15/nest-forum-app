@@ -19,7 +19,7 @@ export class BlogQueryRepository {
 
     const blogsArray = await this.blogsModel
       .find(filter)
-      .sort(queryObj.sortDirection)
+      .sort({ [queryObj.sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])

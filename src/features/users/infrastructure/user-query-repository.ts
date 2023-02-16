@@ -16,7 +16,7 @@ export class UserQueryRepository {
     const filter = this.createFilterForSearchingUser(queryObj);
     const users = await this.userModel
       .find(filter)
-      .sort(queryObj.sortDirection)
+      .sort({ [queryObj.sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])

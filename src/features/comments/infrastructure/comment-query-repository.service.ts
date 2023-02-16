@@ -20,7 +20,7 @@ export class CommentQueryRepository {
   async findCommentsByPostId(postId: string, queryObj: CommentsQueryObj) {
     const comments = await this.commentsModel
       .find({ parentId: postId })
-      .sort(queryObj.sortDirection)
+      .sort({ [queryObj.sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])

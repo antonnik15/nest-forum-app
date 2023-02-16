@@ -37,7 +37,7 @@ export class PostQueryRepository {
   getPostByFilter(filter: any, queryObj: PostQueryObj) {
     return this.postModel
       .find(filter)
-      .sort(queryObj.sortDirection)
+      .sort({ [queryObj.sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v']);
