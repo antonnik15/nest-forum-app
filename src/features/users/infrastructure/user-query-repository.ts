@@ -14,6 +14,7 @@ export class UserQueryRepository {
   ) {}
   async getAllUsers(queryObj: UsersQueryObj): Promise<UserOutputObject> {
     const filter = this.createFilterForSearchingUser(queryObj);
+    console.log(filter);
     const countDocuments = await this.userModel.countDocuments(filter);
     const sortBy = 'accountData.' + queryObj.sortBy;
     const users = await this.userModel
@@ -33,12 +34,12 @@ export class UserQueryRepository {
     if (queryObj.searchEmailTerm) {
       filter['accountData.email'] = {
         $regex: queryObj.searchEmailTerm,
-        options: 'i',
+        $options: 'i',
       };
       if (queryObj.searchLoginTerm) {
         filter['accountData.login'] = {
           $regex: queryObj.searchLoginTerm,
-          options: 'i',
+          $options: 'i',
         };
       }
     }
