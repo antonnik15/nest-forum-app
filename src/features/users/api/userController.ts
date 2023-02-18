@@ -36,7 +36,6 @@ export class UserController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteUserById(@Param('id') id: string) {
-    this.userService.deletePostById(id);
-    return;
+    return this.userService.deleteUserById(id);
   }
 }

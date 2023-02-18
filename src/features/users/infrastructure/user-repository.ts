@@ -13,10 +13,10 @@ export class UserRepository {
     return await user.save();
   }
 
-  deletePostById(id: string) {
-    const user = this.userModel.findOne({ id });
+  async deleteUserById(id: string) {
+    const user = await this.userModel.findOne({ id });
     if (!user) throw new NotFoundException();
-    user.remove();
+    await user.deleteOne();
     return;
   }
 }

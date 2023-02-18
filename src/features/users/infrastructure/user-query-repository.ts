@@ -15,9 +15,10 @@ export class UserQueryRepository {
   async getAllUsers(queryObj: UsersQueryObj): Promise<UserOutputObject> {
     const filter = this.createFilterForSearchingUser(queryObj);
     const countDocuments = await this.userModel.countDocuments(filter);
+    const sortBy = 'accountData.' + queryObj.sortBy;
     const users = await this.userModel
       .find(filter)
-      .sort({ [queryObj.sortBy]: queryObj.sortDirection })
+      .sort({ [sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])

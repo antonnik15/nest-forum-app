@@ -19,9 +19,8 @@ export class UserService {
     };
   }
 
-  deletePostById(id: string) {
-    this.usersRepository.deletePostById(id);
-    return;
+  deleteUserById(id: string) {
+    return this.usersRepository.deleteUserById(id);
   }
 
   private async createUserModelForDb(dto: CreateUserDto) {
