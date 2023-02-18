@@ -21,8 +21,7 @@ export class UserQueryRepository {
       .sort({ [sortBy]: queryObj.sortDirection })
       .skip(queryObj.getCountOfSkipElem)
       .limit(+queryObj.pageSize)
-      .select(['-_id', '-__v'])
-      .exec();
+      .select(['-_id', '-__v']);
     const usersArray = this.userViewModelMapper.createUserArray(users);
     return new UserOutputObject(queryObj, usersArray, countDocuments);
   }
@@ -39,7 +38,7 @@ export class UserQueryRepository {
       });
       if (queryObj.searchLoginTerm) {
         filter.$or.push({
-          'accountData.email': {
+          'accountData.login': {
             $regex: queryObj.searchLoginTerm,
             $options: 'i',
           },
