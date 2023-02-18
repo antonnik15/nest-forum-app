@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../domain/entities/blog.shema';
 import { Model } from 'mongoose';
@@ -28,7 +28,9 @@ export class BlogQueryRepository {
     return new BlogOutPutObject(queryObj, blogsArray, countDocuments);
   }
 
-  getBlogById(id: string): Promise<Blog> {
-    return this.blogsModel.findOne({ id: id }).select('-_id -__v').exec();
+  async getBlogById(id: string): Promise<Blog> {
+    const blog = await this.blogsModel.findOne({ id: id }).select('-_id -__v');
+    if (!blog) throw new NotFoundException();
+    return blog;
   }
 }

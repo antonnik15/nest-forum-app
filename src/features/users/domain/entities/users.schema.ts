@@ -51,6 +51,19 @@ export class User {
 
   @Prop({ required: true, type: EmailInfoSchema })
   emailInfo: EmailInfo;
+
+  createUserViewModel() {
+    return {
+      id: this.id,
+      login: this.accountData.login,
+      email: this.accountData.email,
+      createdAt: this.accountData.createdAt,
+    };
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.methods = {
+  createUserViewModel: User.prototype.createUserViewModel,
+};

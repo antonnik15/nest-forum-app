@@ -2,13 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/entities/users.schema';
 import { Model } from 'mongoose';
+import { CreateUserDtoForDb } from '../api/dto/create.user.dto.for.db';
 
 @Injectable()
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async createUser(dto: User) {
-    const user = new this.userModel(dto);
+  async createUser(dtoForDb: CreateUserDtoForDb) {
+    const user = new this.userModel(dtoForDb);
     return await user.save();
   }
 

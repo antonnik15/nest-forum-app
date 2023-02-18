@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { UsersQueryObj } from './dto/users.query.obj';
 import { UserQueryRepository } from '../infrastructure/user-query-repository';
-import { UserOutputObject } from './dto/user.output.object';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UserService } from '../application/user.service';
 
@@ -25,15 +24,13 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async getAllUsers(@Query() query: UsersQueryObj) {
     const queryObj = new UsersQueryObj(query);
-    const usersArray = await this.usersQueryRepository.getAllUsers(queryObj);
-    return new UserOutputObject(queryObj, usersArray);
+    return await this.usersQueryRepository.getAllUsers(queryObj);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() dto: CreateUserDto) {
-    await this.userService.createUser(dto);
-    return;
+    return await this.userService.createUser(dto);
   }
 
   @Delete(':id')

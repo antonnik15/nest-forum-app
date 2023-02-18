@@ -53,6 +53,7 @@ export class PostController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string) {
     await this.postService.deletePostById(id);
     return;

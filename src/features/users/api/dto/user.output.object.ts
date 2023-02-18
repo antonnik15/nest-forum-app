@@ -7,11 +7,15 @@ export class UserOutputObject {
   private totalCount: number;
   private pageSize: number;
   items: UserViewModel[];
-  constructor(queryObj: UsersQueryObj, usersArray: UserViewModel[]) {
-    this.pagesCount = Math.ceil(usersArray.length / +queryObj.pageSize);
+  constructor(
+    queryObj: UsersQueryObj,
+    usersArray: UserViewModel[],
+    countDoc: number,
+  ) {
+    this.pagesCount = Math.ceil(countDoc / +queryObj.pageSize);
     this.page = +queryObj.pageNumber;
     this.pageSize = +queryObj.pageSize;
-    this.totalCount = usersArray.length;
+    this.totalCount = countDoc;
     this.items = usersArray;
   }
 }

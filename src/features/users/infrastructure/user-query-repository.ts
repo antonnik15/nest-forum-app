@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/entities/users.schema';
 import { Model } from 'mongoose';
 import { UserViewModelMapper } from '../../../helpers/user.view.model.mapper';
-import { UserViewModel } from '../api/dto/user.view.model';
+import { UserOutputObject } from '../api/dto/user.output.object';
 
 @Injectable()
 export class UserQueryRepository {
@@ -12,8 +12,9 @@ export class UserQueryRepository {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private userViewModelMapper: UserViewModelMapper,
   ) {}
-  async getAllUsers(queryObj: UsersQueryObj): Promise<UserViewModel[]> {
+  async getAllUsers(queryObj: UsersQueryObj): Promise<UserOutputObject> {
     const filter = this.createFilterForSearchingUser(queryObj);
+    const countDocuments = await this.userModel.countDocuments(filter);
     const users = await this.userModel
       .find(filter)
       .sort({ [queryObj.sortBy]: queryObj.sortDirection })
@@ -21,7 +22,8 @@ export class UserQueryRepository {
       .limit(+queryObj.pageSize)
       .select(['-_id', '-__v'])
       .exec();
-    return this.userViewModelMapper.createUserArray(users);
+    const usersArray = this.userViewModelMapper.createUserArray(users);
+    return new UserOutputObject(queryObj, usersArray, countDocuments);
   }
 
   private createFilterForSearchingUser(queryObj: UsersQueryObj) {
