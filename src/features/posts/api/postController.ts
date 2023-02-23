@@ -5,20 +5,19 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
-import { PostQueryObj } from './dto/post.query.obj';
 import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { CreatePostDto } from './dto/create.post.dto';
 import { PostService } from '../application/post.service';
 import { UpdatePostDto } from './dto/update.post.dto';
-import { CommentsQueryObj } from '../../comments/api/dto/comments.query.obj';
+import { CommentsPaginationDto } from '../../comments/api/dto/comments.pagination.dto';
 import { CommentQueryRepository } from '../../comments/infrastructure/comment-query-repository.service';
 import { CommentsOutputObject } from '../../comments/api/dto/comments.output.object';
+import { PostsPaginationDto } from './dto/post.pagination.dto';
 
 @Controller('posts')
 export class PostController {
@@ -29,9 +28,8 @@ export class PostController {
   ) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPosts(@Query() query: PostQueryObj) {
-    const queryObj = new PostQueryObj(query);
-    return await this.postQueryRepository.getAllPosts(queryObj);
+  async getPosts(@Query() postsPaginationDto: PostsPaginationDto) {
+    return await this.postQueryRepository.getAllPosts(postsPaginationDto);
   }
 
   @Post()
@@ -47,8 +45,11 @@ export class PostController {
 
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePostById(@Param('id') id: string, @Body() dto: UpdatePostDto) {
-    await this.postService.updatePostById(dto, id);
+  async updatePostById(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    await this.postService.updatePostById(updatePostDto, id);
     return;
   }
 
@@ -63,13 +64,12 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   async findCommentsForCertainPost(
     @Param('postId') postId: string,
-    @Query() query: CommentsQueryObj,
-  ) {
-    const post = await this.postQueryRepository.findPostById(postId);
-    if (!post) throw new NotFoundException();
-    const queryObj = new CommentsQueryObj(query);
-    const commentsArray =
-      await this.commentsQueryRepository.findCommentsByPostId(postId, queryObj);
-    return new CommentsOutputObject(queryObj, commentsArray);
+    @Query() commentsPaginationDto: CommentsPaginationDto,
+  ): Promise<CommentsOutputObject> {
+    await this.postQueryRepository.findPostById(postId);
+    return await this.commentsQueryRepository.findCommentsByPostId(
+      postId,
+      commentsPaginationDto,
+    );
   }
 }

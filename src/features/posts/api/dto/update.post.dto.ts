@@ -1,7 +1,10 @@
-export class UpdatePostDto {
-  public title: string;
-  public shortDescription: string;
-  public content: string;
-  public blogId: string;
-  public blogName: string = null;
-}
+import { PickType } from '@nestjs/mapped-types';
+import { CreatePostDto } from './create.post.dto';
+
+export class UpdatePostDto extends PickType(CreatePostDto, [
+  'title',
+  'shortDescription',
+  'content',
+  'blogId',
+  'blogName',
+]) {}

@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../api/dto/create.user.dto';
 import { UserRepository } from '../infrastructure/user-repository';
 import { CreateUserDtoForDb } from '../api/dto/create.user.dto.for.db';
+import { RegistrationUserDto } from '../../auth/api/dto/registration.user.dto';
 
 @Injectable()
 export class UserService {
@@ -31,5 +32,12 @@ export class UserService {
 
   private async generatePasswordHash(password: string) {
     return bcrypt.genSalt(10).then((salt) => bcrypt.hash(password, salt));
+  }
+
+  async registerUser(dto: RegistrationUserDto) {
+    const newUser = await this.createUserModelForDb(dto);
+    const createdUser = await this.usersRepository.createUser({ ...newUser });
+    if (!createdUser) throw new NotFoundException();
+    return newUser;
   }
 }

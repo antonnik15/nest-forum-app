@@ -11,8 +11,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { BlogQueryRepository } from '../infrastructure/blog-query-repository.service';
-import { BlogsQueryObj } from './dto/blogs.query.obj';
+import { BlogQueryRepository } from '../infrastructure/blog-query-repository';
+import { BlogPaginationDto } from './dto/blog.pagination-dto';
 import { BlogsService } from '../application/blogs.service';
 import { BlogOutPutObject } from './dto/blog.output.object';
 import { BlogViewModel } from './dto/blog.view.model';
@@ -21,8 +21,8 @@ import { UpdateBlogDto } from './dto/update.blog.dto';
 import { CreatePostForBlogDto } from './dto/create.post.for.blog.dto';
 import { PostService } from '../../posts/application/post.service';
 import { PostQueryRepository } from '../../posts/infrastructure/post.query.repository';
-import { PostQueryObj } from '../../posts/api/dto/post.query.obj';
 import { PostOutputObject } from '../../posts/api/dto/post.output.object';
+import { PostsPaginationDto } from '../../posts/api/dto/post.pagination.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -34,26 +34,35 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async getBlogs(@Query() query: BlogsQueryObj): Promise<BlogOutPutObject> {
-    const queryObj: BlogsQueryObj = new BlogsQueryObj(query);
-    return await this.blogsQueryRepository.getAllBlogs(queryObj);
+  async getBlogs(
+    @Query() blogPaginationDto: BlogPaginationDto,
+  ): Promise<BlogOutPutObject> {
+    return await this.blogsQueryRepository.getAllBlogs(blogPaginationDto);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createBlog(@Body() dto: CreateBlogDto): Promise<BlogViewModel> {
-    return await this.blogService.createBlog(dto);
+  async createBlog(
+    @Body() createBlogDto: CreateBlogDto,
+  ): Promise<BlogViewModel> {
+    return await this.blogService.createBlog(createBlogDto);
   }
 
   @Get(':id')
   async getBlogById(@Param('id') id: string) {
-    return await this.blogsQueryRepository.getBlogById(id);
+    const blog = await this.blogsQueryRepository.getBlogById(id);
+    if (!blog) throw new NotFoundException();
+    return blog;
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateBlogById(@Param('id') id: string, @Body() dto: UpdateBlogDto) {
-    await this.blogService.updateBlogById(id, dto);
+  async updateBlogById(
+    @Param('id') id: string,
+    @Body() updateBlogDto: UpdateBlogDto,
+  ) {
+    console.log(updateBlogDto);
+    await this.blogService.updateBlogById(id, updateBlogDto);
     return;
   }
 
@@ -67,12 +76,14 @@ export class BlogsController {
   @HttpCode(HttpStatus.OK)
   async findPostForCertainBlog(
     @Param('blogId') blogId: string,
-    @Query() query: PostQueryObj,
+    @Query() postsPaginationDto: PostsPaginationDto,
   ): Promise<PostOutputObject> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
-    const queryObj: PostQueryObj = new PostQueryObj(query);
-    return await this.postQueryRepository.findPostByBlogId(blogId, queryObj);
+    return await this.postQueryRepository.findPostByBlogId(
+      blogId,
+      postsPaginationDto,
+    );
   }
 
   @Post(':blogId/posts')

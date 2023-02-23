@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UsersQueryObj } from './dto/users.query.obj';
+import { UserPaginationDto } from './dto/user.pagination.dto';
 import { UserQueryRepository } from '../infrastructure/user-query-repository';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UserService } from '../application/user.service';
@@ -22,9 +22,8 @@ export class UserController {
   ) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllUsers(@Query() query: UsersQueryObj) {
-    const queryObj = new UsersQueryObj(query);
-    return await this.usersQueryRepository.getAllUsers(queryObj);
+  async getAllUsers(@Query() userPaginationDto: UserPaginationDto) {
+    return await this.usersQueryRepository.getAllUsers(userPaginationDto);
   }
 
   @Post()

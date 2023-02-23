@@ -1,5 +1,5 @@
-import { PostQueryObj } from './post.query.obj';
 import { Post } from '../../domain/entities/post.schema';
+import { PostsPaginationDto } from './post.pagination.dto';
 
 export class PostOutputObject {
   private pagesCount: number;
@@ -7,10 +7,14 @@ export class PostOutputObject {
   private totalCount: number;
   private pageSize: number;
   items: Post[];
-  constructor(queryObj: PostQueryObj, postsArray: any, countDoc: number) {
-    this.pagesCount = Math.ceil(countDoc / +queryObj.pageSize);
-    this.page = +queryObj.pageNumber;
-    this.pageSize = +queryObj.pageSize;
+  constructor(
+    paginationDto: PostsPaginationDto,
+    postsArray: any,
+    countDoc: number,
+  ) {
+    this.pagesCount = Math.ceil(countDoc / paginationDto.pageSize);
+    this.page = paginationDto.pageNumber;
+    this.pageSize = paginationDto.pageSize;
     this.totalCount = countDoc;
     this.items = postsArray;
   }

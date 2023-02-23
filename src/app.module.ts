@@ -10,7 +10,7 @@ import { CommentService } from './features/comments/application/comments.service
 import { PostService } from './features/posts/application/post.service';
 import { TestingService } from './features/testing/application/testing.service';
 import { UserService } from './features/users/application/user.service';
-import { BlogQueryRepository } from './features/blogs/infrastructure/blog-query-repository.service';
+import { BlogQueryRepository } from './features/blogs/infrastructure/blog-query-repository';
 import { CommentQueryRepository } from './features/comments/infrastructure/comment-query-repository.service';
 import { PostQueryRepository } from './features/posts/infrastructure/post.query.repository';
 import { UserQueryRepository } from './features/users/infrastructure/user-query-repository';
@@ -32,6 +32,12 @@ import { UserViewModelMapper } from './helpers/user.view.model.mapper';
 import { CommentViewModelMapper } from './helpers/comment.view.model.mapper';
 import { PostViewModelMapper } from './helpers/post.view.model.mapper';
 import { TestingRepository } from './features/testing/infrastructure/testing.repository.mongodb';
+import { UserLoginExistValidator } from './validators/user-login.exist.validator';
+import { AuthController } from './features/auth/api/auth.controller';
+import { AuthService } from './features/auth/application/auth.service';
+import { UserEmailExistValidator } from './validators/user-email-exist.validator';
+import { EmailModule } from './features/email/email.module';
+import { ConfigModule } from '@nestjs/config';
 
 const controllers = [
   BlogsController,
@@ -39,6 +45,7 @@ const controllers = [
   PostController,
   TestingController,
   UserController,
+  AuthController,
 ];
 
 const services = [
@@ -47,6 +54,7 @@ const services = [
   PostService,
   TestingService,
   UserService,
+  AuthService,
 ];
 
 const queryRepositories = [
@@ -78,12 +86,16 @@ const mappers = [
   PostViewModelMapper,
 ];
 
+const validators = [UserLoginExistValidator, UserEmailExistValidator];
+
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: 'nest' }),
     MongooseModule.forFeature(mongooseModels),
+    EmailModule,
+    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: controllers,
-  providers: [...services, ...repositories, ...mappers],
+  providers: [...services, ...repositories, ...mappers, ...validators],
 })
 export class AppModule {}

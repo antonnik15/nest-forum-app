@@ -1,4 +1,4 @@
-import { UsersQueryObj } from './users.query.obj';
+import { UserPaginationDto } from './user.pagination.dto';
 import { UserViewModel } from './user.view.model';
 
 export class UserOutputObject {
@@ -8,13 +8,13 @@ export class UserOutputObject {
   private pageSize: number;
   items: UserViewModel[];
   constructor(
-    queryObj: UsersQueryObj,
+    paginationDto: UserPaginationDto,
     usersArray: UserViewModel[],
     countDoc: number,
   ) {
-    this.pagesCount = Math.ceil(countDoc / +queryObj.pageSize);
-    this.page = +queryObj.pageNumber;
-    this.pageSize = +queryObj.pageSize;
+    this.pagesCount = Math.ceil(countDoc / paginationDto.pageSize);
+    this.page = paginationDto.pageNumber;
+    this.pageSize = paginationDto.pageSize;
     this.totalCount = countDoc;
     this.items = usersArray;
   }

@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePostDto } from '../api/dto/create.post.dto';
 import { PostRepository } from '../infrastructure/post.repository';
-import { BlogQueryRepository } from '../../blogs/infrastructure/blog-query-repository.service';
+import { BlogQueryRepository } from '../../blogs/infrastructure/blog-query-repository';
 import { UpdatePostDto } from '../api/dto/update.post.dto';
 import { CreatePostForBlogDto } from '../../blogs/api/dto/create.post.for.blog.dto';
 
@@ -39,7 +39,7 @@ export class PostService {
 
   async addBlogNameToDto(dto: CreatePostDto | UpdatePostDto) {
     const blogById = await this.blogsQueryRepository.getBlogById(dto.blogId);
-    if (!blogById) throw new NotFoundException();
+    if (!blogById) throw new BadRequestException(HttpStatus.BAD_REQUEST);
     dto.blogName = blogById.name;
     dto.blogId = blogById.id;
   }
