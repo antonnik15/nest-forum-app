@@ -36,11 +36,13 @@ export class CommentViewModelMapper {
       likesInfo: {
         likesCount: await this.reactionModel.countDocuments({
           parentId: comment.id,
+          reactionStatus: 'Like',
         }),
         dislikesCount: await this.reactionModel.countDocuments({
           parentId: comment.id,
+          reactionStatus: 'Dislike',
         }),
-        myStatus: myReaction?.likesStatus ?? 'None',
+        myStatus: myReaction?.reactionStatus ?? 'None',
       },
     };
   }

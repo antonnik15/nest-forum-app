@@ -1,5 +1,6 @@
 import { IsString, MaxLength } from 'class-validator';
 import { Trim } from '../../../../decorators/validation/trim.decorator';
+import { BlogExist } from '../../../../decorators/param/blog-exist.decorator';
 
 export class CreatePostDto {
   @IsString()
@@ -18,6 +19,7 @@ export class CreatePostDto {
   content: string;
 
   @IsString()
+  @BlogExist()
   blogId: string;
 
   blogName: string | null = null;

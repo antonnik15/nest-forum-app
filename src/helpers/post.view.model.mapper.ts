@@ -25,12 +25,13 @@ export class PostViewModelMapper {
         userId,
       });
     }
+
     const lastThreeLikes = await this.reactionModel
       .find({ parentId: post.id, reactionStatus: 'Like' })
       .sort({ addedAt: 'desc' })
       .limit(3)
       .select(['-_id', '-__v', '-parentId', '-reactionStatus']);
-    console.log(myReaction);
+
     return {
       id: post.id,
       title: post.title,
