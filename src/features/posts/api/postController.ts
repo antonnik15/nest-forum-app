@@ -29,6 +29,8 @@ import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
 import { ReactionStatusDto } from '../../reaction/api/dto/reaction-status.dto';
 import { ReactionService } from '../../reaction/application/reaction.service';
 import { PostViewModelMapper } from '../../../helpers/post.view.model.mapper';
+import { GetUserIdFromBearerToken } from '../../../guards/get-userId-from-bearer-token.guard';
+import { UserId } from '../../../decorators/param/user-id.decorator';
 
 @Controller('posts')
 export class PostController {
@@ -41,16 +43,16 @@ export class PostController {
     private readonly postViewModelMapper: PostViewModelMapper,
   ) {}
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(GetUserIdFromBearerToken)
   @Get()
   @HttpCode(HttpStatus.OK)
   async getPosts(
     @Query() postsPaginationDto: PostsPaginationDto,
-    @UserInfo() user: UserInfoDto,
+    @UserId() userId: string | null,
   ) {
     return await this.postQueryRepository.getAllPosts(
       postsPaginationDto,
-      user.id,
+      userId,
     );
   }
 
@@ -61,12 +63,12 @@ export class PostController {
     return this.postService.createPost(createPostDto);
   }
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(GetUserIdFromBearerToken)
   @Get(':id')
-  async findPostById(@Param('id') id: string, @UserInfo() user: UserInfoDto) {
+  async findPostById(@Param('id') id: string, @UserId() userId: string | null) {
     const post = await this.postQueryRepository.findPostById(id);
     if (!post) throw new NotFoundException();
-    return this.postViewModelMapper.mapPostToViewModel(post, user.id);
+    return this.postViewModelMapper.mapPostToViewModel(post, userId);
   }
 
   @UseGuards(BasicAuthGuard)
@@ -88,20 +90,20 @@ export class PostController {
     return;
   }
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(GetUserIdFromBearerToken)
   @Get(':postId/comments')
   @HttpCode(HttpStatus.OK)
   async findCommentsForCertainPost(
     @Param('postId') postId: string,
     @Query() commentsPaginationDto: CommentsPaginationDto,
-    @UserInfo() user: UserInfoDto,
+    @UserId() userId: string | null,
   ): Promise<CommentsOutputObject> {
     const post = await this.postQueryRepository.findPostById(postId);
     if (!post) throw new NotFoundException();
     return this.commentsQueryRepository.findCommentsByPostId(
       post.id,
       commentsPaginationDto,
-      user.id,
+      userId,
     );
   }
 

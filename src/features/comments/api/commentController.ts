@@ -18,6 +18,8 @@ import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
 import { CommentService } from '../application/comments.service';
 import { ReactionStatusDto } from '../../reaction/api/dto/reaction-status.dto';
 import { CommentViewModelMapper } from '../../../helpers/comment.view.model.mapper';
+import { GetUserIdFromBearerToken } from '../../../guards/get-userId-from-bearer-token.guard';
+import { UserId } from '../../../decorators/param/user-id.decorator';
 
 @Controller('comments')
 export class CommentController {
@@ -27,16 +29,16 @@ export class CommentController {
     private readonly commentViewModelMapper: CommentViewModelMapper,
   ) {}
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(GetUserIdFromBearerToken)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async findCommentById(
     @Param('id') id: string,
-    @UserInfo() user: UserInfoDto,
+    @UserId() userId: string | null,
   ) {
     const comment = await this.commentsQueryRepository.findCommentById(id);
     if (!comment) throw new NotFoundException();
-    return this.commentViewModelMapper.mapCommentToViewModel(comment, user.id);
+    return this.commentViewModelMapper.mapCommentToViewModel(comment, userId);
   }
 
   @UseGuards(BearerAuthGuard)

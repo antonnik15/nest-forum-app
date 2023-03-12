@@ -12,7 +12,7 @@ export class PostQueryRepository {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private postViewModelMapper: PostViewModelMapper,
   ) {}
-  async getAllPosts(paginationDto: PostsPaginationDto, userId: string) {
+  async getAllPosts(paginationDto: PostsPaginationDto, userId: string | null) {
     const countDocuments = await this.postModel.find().countDocuments();
     const posts = await this.getPostByFilter({}, paginationDto);
     const postsArray = await this.postViewModelMapper.createPostArray(
@@ -29,7 +29,7 @@ export class PostQueryRepository {
   async findPostByBlogId(
     blogId: string,
     paginationDto: PostsPaginationDto,
-    userId: string,
+    userId: string | null,
   ) {
     const filter = { blogId: blogId };
     const countDocuments = await this.postModel.find(filter).countDocuments();

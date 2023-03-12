@@ -22,7 +22,7 @@ export class CommentQueryRepository {
   async findCommentsByPostId(
     postId: string,
     paginationDto: CommentsPaginationDto,
-    userId: string,
+    userId: string | null,
   ) {
     const countDocuments = await this.commentsModel
       .find({ parentId: postId })

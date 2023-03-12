@@ -25,9 +25,8 @@ import { PostQueryRepository } from '../../posts/infrastructure/post.query.repos
 import { PostOutputObject } from '../../posts/api/dto/post.output.object';
 import { PostsPaginationDto } from '../../posts/api/dto/post.pagination.dto';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
-import { BearerAuthGuard } from '../../../guards/bearer-auth.guard';
-import { UserInfo } from '../../../decorators/param/user-info.decorator';
-import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
+import { GetUserIdFromBearerToken } from '../../../guards/get-userId-from-bearer-token.guard';
+import { UserId } from '../../../decorators/param/user-id.decorator';
 
 @Controller('blogs')
 export class BlogsController {
@@ -78,20 +77,20 @@ export class BlogsController {
     return await this.blogService.deleteBlogByID(id);
   }
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(GetUserIdFromBearerToken)
   @Get(':blogId/posts')
   @HttpCode(HttpStatus.OK)
   async findPostForCertainBlog(
     @Param('blogId') blogId: string,
     @Query() postsPaginationDto: PostsPaginationDto,
-    @UserInfo() user: UserInfoDto,
+    @UserId() userId: string | null,
   ): Promise<PostOutputObject> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     return this.postQueryRepository.findPostByBlogId(
       blogId,
       postsPaginationDto,
-      user.id,
+      userId,
     );
   }
   @UseGuards(BasicAuthGuard)
