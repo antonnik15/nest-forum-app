@@ -74,7 +74,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@RefreshToken() token: string) {
     if (!token) throw new UnauthorizedException();
     const deletionResult = await this.authService.logout(token);
@@ -112,6 +112,10 @@ export class AuthController {
   @Get('me')
   @HttpCode(HttpStatus.OK)
   getInfoAboutCurrentUser(@UserInfo() userInfo: UserInfoDto) {
-    return userInfo;
+    return {
+      userId: userInfo.id,
+      email: userInfo.email,
+      login: userInfo.login,
+    };
   }
 }

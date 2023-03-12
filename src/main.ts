@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -29,7 +30,6 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.use(cookieParser());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(port, () => {
     console.log(`App start on ${port} port`);

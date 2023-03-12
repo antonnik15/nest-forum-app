@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { SessionQueryRepository } from '../infrastructure/session.query.repository';
-import { BearerAuthGuard } from '../../../guards/bearer-auth.guard';
 import { UserInfo } from '../../../decorators/param/user-info.decorator';
 import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
 import { SessionService } from '../application/session.service';
@@ -23,11 +22,11 @@ export class SessionController {
     private readonly sessionService: SessionService,
   ) {}
 
-  @UseGuards(BearerAuthGuard)
+  @UseGuards(RefreshTokenGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllSessionsForCurrentUser(@UserInfo() user: UserInfoDto) {
-    return this.sessionQueryRepository.getSessions(user.id);
+  async getAllSessionsForCurrentUser(@UserInfo() userInfo: UserInfoDto) {
+    return this.sessionQueryRepository.getSessions(userInfo.id);
   }
 
   @UseGuards(RefreshTokenGuard)
