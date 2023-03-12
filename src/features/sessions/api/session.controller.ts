@@ -43,6 +43,7 @@ export class SessionController {
 
   @UseGuards(RefreshTokenGuard)
   @Delete(':deviceId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteSessionByUserIdAndDeviceId(
     @Param('deviceId') deviceId: string,
     @UserInfo() user: UserInfoDto,
