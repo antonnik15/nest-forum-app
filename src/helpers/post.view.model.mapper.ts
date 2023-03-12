@@ -26,11 +26,11 @@ export class PostViewModelMapper {
       });
     }
     const lastThreeLikes = await this.reactionModel
-      .find({ parentId: post.id })
+      .find({ parentId: post.id, reactionStatus: 'Like' })
       .sort({ addedAt: 'desc' })
       .limit(3)
-      .select(['-_id', '-__v', '_parentId', '-reactionStatus']);
-
+      .select(['-_id', '-__v', '-parentId', '-reactionStatus']);
+    console.log(myReaction);
     return {
       id: post.id,
       title: post.title,
@@ -42,11 +42,13 @@ export class PostViewModelMapper {
       extendedLikesInfo: {
         likesCount: await this.reactionModel.countDocuments({
           parentId: post.id,
+          reactionStatus: 'Like',
         }),
         dislikesCount: await this.reactionModel.countDocuments({
           parentId: post.id,
+          reactionStatus: 'Dislike',
         }),
-        myStatus: myReaction?.likesStatus ?? 'None',
+        myStatus: myReaction?.reactionStatus ?? 'None',
         newestLikes: lastThreeLikes,
       },
     };
