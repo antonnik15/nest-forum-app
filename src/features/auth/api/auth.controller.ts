@@ -41,7 +41,7 @@ export class AuthController {
       userAgent,
       ip,
     );
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
 
@@ -59,7 +59,7 @@ export class AuthController {
       );
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
       });
       return { accessToken };
     } catch (e) {
