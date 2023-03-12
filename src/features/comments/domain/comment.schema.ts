@@ -18,6 +18,9 @@ export class Comment {
   parentId: string;
 
   @Prop({ required: true, type: String })
+  parentType: string;
+
+  @Prop({ required: true, type: String })
   content: string;
 
   @Prop({ required: true, type: String })

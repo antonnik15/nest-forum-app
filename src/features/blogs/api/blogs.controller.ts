@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogQueryRepository } from '../infrastructure/blog-query-repository';
 import { BlogPaginationDto } from './dto/blog.pagination-dto';
@@ -23,6 +24,10 @@ import { PostService } from '../../posts/application/post.service';
 import { PostQueryRepository } from '../../posts/infrastructure/post.query.repository';
 import { PostOutputObject } from '../../posts/api/dto/post.output.object';
 import { PostsPaginationDto } from '../../posts/api/dto/post.pagination.dto';
+import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
+import { BearerAuthGuard } from '../../../guards/bearer-auth.guard';
+import { UserInfo } from '../../../decorators/param/user-info.decorator';
+import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -37,15 +42,16 @@ export class BlogsController {
   async getBlogs(
     @Query() blogPaginationDto: BlogPaginationDto,
   ): Promise<BlogOutPutObject> {
-    return await this.blogsQueryRepository.getAllBlogs(blogPaginationDto);
+    return this.blogsQueryRepository.getAllBlogs(blogPaginationDto);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,
   ): Promise<BlogViewModel> {
-    return await this.blogService.createBlog(createBlogDto);
+    return this.blogService.createBlog(createBlogDto);
   }
 
   @Get(':id')
@@ -55,37 +61,40 @@ export class BlogsController {
     return blog;
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlogById(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ) {
-    console.log(updateBlogDto);
-    await this.blogService.updateBlogById(id, updateBlogDto);
-    return;
+    return this.blogService.updateBlogById(id, updateBlogDto);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlogById(@Param('id') id: string) {
     return await this.blogService.deleteBlogByID(id);
   }
 
+  @UseGuards(BearerAuthGuard)
   @Get(':blogId/posts')
   @HttpCode(HttpStatus.OK)
   async findPostForCertainBlog(
     @Param('blogId') blogId: string,
     @Query() postsPaginationDto: PostsPaginationDto,
+    @UserInfo() user: UserInfoDto,
   ): Promise<PostOutputObject> {
     const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
-    return await this.postQueryRepository.findPostByBlogId(
+    return this.postQueryRepository.findPostByBlogId(
       blogId,
       postsPaginationDto,
+      user.id,
     );
   }
-
+  @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
   async createPostForCertainBlog(
     @Param('blogId') blogId: string,

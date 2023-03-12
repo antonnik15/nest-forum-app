@@ -9,10 +9,16 @@ export class CommentViewModelMapper {
   constructor(
     @InjectModel(Like.name) private likesModel: Model<LikeDocument>,
   ) {}
-  async createCommentsArray(comments: Comment[]) {
-    return Promise.all(comments.map((c) => this.mapCommentToViewModel(c)));
+  async createCommentsArray(comments: Comment[], userId: string) {
+    return Promise.all(
+      comments.map((c) => this.mapCommentToViewModel(c, userId)),
+    );
   }
-  async mapCommentToViewModel(comment: Comment) {
+  async mapCommentToViewModel(comment: Comment, userId: string) {
+    const myReaction = this.likesModel.findOne({
+      parentId: comment.id,
+      userId,
+    });
     return {
       id: comment.id,
       content: comment.content,
@@ -28,7 +34,7 @@ export class CommentViewModelMapper {
         dislikesCount: await this.likesModel.countDocuments({
           parentId: comment.id,
         }),
-        myStatus: 'None',
+        myStatus: myReaction ?? 'None',
       },
     };
   }

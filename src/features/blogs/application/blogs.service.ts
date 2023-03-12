@@ -1,4 +1,4 @@
-import { BlogRepository } from '../infrastructure/blog-repository.service';
+import { BlogRepository } from '../infrastructure/blog-repository';
 import { Injectable } from '@nestjs/common';
 import { CreateBlogDto } from '../api/dto/create.blog.dto';
 import { UpdateBlogDto } from '../api/dto/update.blog.dto';

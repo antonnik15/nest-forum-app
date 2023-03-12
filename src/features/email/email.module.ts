@@ -8,15 +8,15 @@ import { EmailService } from './email.service';
 @Module({
   imports: [
     MailerModule.forRootAsync({
-      useFactory: async (config: ConfigService) => ({
+      useFactory: async (configService: ConfigService) => ({
         transport: {
           host: 'smtp.gmail.com',
           port: 465,
           ignoreTLS: true,
           secure: true,
           auth: {
-            user: config.get('EMAIL_USER'),
-            pass: config.get('EMAIL_PASSWORD'),
+            user: configService.get('EMAIL_USER'),
+            pass: configService.get('EMAIL_PASSWORD'),
           },
         },
         defaults: {
@@ -34,6 +34,6 @@ import { EmailService } from './email.service';
     }),
   ],
   providers: [EmailService],
-  exports: [EmailService],
+  exports: [EmailService, EmailService],
 })
 export class EmailModule {}

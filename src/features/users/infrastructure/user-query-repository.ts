@@ -10,8 +10,11 @@ import { UserOutputObject } from '../api/dto/user.output.object';
 export class UserQueryRepository {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private userViewModelMapper: UserViewModelMapper,
+    private readonly userViewModelMapper: UserViewModelMapper,
   ) {}
+  getUser() {
+    return this.userModel.find();
+  }
   async getAllUsers(
     paginationDto: UserPaginationDto,
   ): Promise<UserOutputObject> {
@@ -61,5 +64,28 @@ export class UserQueryRepository {
     return this.userModel
       .findOne({ 'accountData.email': email })
       .select(['-_id', '-__v']);
+  }
+
+  findUserByConfirmationCode(code: string) {
+    return this.userModel.findOne({ 'emailInfo.confirmationCode': code });
+  }
+
+  async findUserByLoginOrEmail(loginOrEmail: string) {
+    return this.userModel.findOne({
+      $or: [
+        { 'accountData.login': loginOrEmail },
+        { 'accountData.login': loginOrEmail },
+      ],
+    });
+  }
+
+  findUserById(userId: string) {
+    return this.userModel.findOne({ id: userId });
+  }
+
+  findUserByPasswordRecoveryCode(recoveryCode: string) {
+    return this.userModel.findOne({
+      'passwordRecoveryInfo.recoveryCode': recoveryCode,
+    });
   }
 }

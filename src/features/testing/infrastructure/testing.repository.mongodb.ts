@@ -6,6 +6,10 @@ import { Blog, BlogDocument } from '../../blogs/domain/entities/blog.shema';
 import { Comment, CommentDocument } from '../../comments/domain/comment.schema';
 import { Like, LikeDocument } from '../../likes/like.schema';
 import { Post, PostDocument } from '../../posts/domain/entities/post.schema';
+import {
+  Session,
+  SessionDocument,
+} from '../../sessions/domain/entities/session.schema';
 
 @Injectable()
 export class TestingRepository {
@@ -16,6 +20,8 @@ export class TestingRepository {
     private readonly commentModel: Model<CommentDocument>,
     @InjectModel(Like.name) private readonly LikeModel: Model<LikeDocument>,
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+    @InjectModel(Session.name)
+    private readonly sessionModel: Model<SessionDocument>,
   ) {}
   async wipeAllData() {
     try {
@@ -23,6 +29,8 @@ export class TestingRepository {
       await this.blogModel.deleteMany({});
       await this.LikeModel.deleteMany({});
       await this.postModel.deleteMany({});
+      await this.commentModel.deleteMany({});
+      await this.sessionModel.deleteMany({});
     } catch (e) {
       return false;
     }

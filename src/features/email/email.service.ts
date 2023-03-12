@@ -9,6 +9,9 @@ export class EmailService {
     private readonly config: ConfigService,
   ) {}
   private confirmationUrl = this.config.get<string>('EMAIL_CONFIRMATION_URL');
+  private passwordRecoveryUrl = this.config.get<string>(
+    'PASSWORD_RECOVERY_URL',
+  );
 
   async sendEmailConfirmationMessage(
     login: string,
@@ -23,6 +26,22 @@ export class EmailService {
       context: {
         name: login,
         confirmUrl,
+      },
+    });
+  }
+
+  async sendPasswordRecoveryCode(
+    email: string,
+    login: string,
+    recoveryCode: string,
+  ) {
+    const passwordRecoveryUrl = this.passwordRecoveryUrl + recoveryCode;
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Password Recovery',
+      template: './password-recovery',
+      context: {
+        recoveryUrl: passwordRecoveryUrl,
       },
     });
   }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../domain/entities/post.schema';
 import { Model } from 'mongoose';
@@ -12,25 +12,33 @@ export class PostQueryRepository {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private postViewModelMapper: PostViewModelMapper,
   ) {}
-  async getAllPosts(paginationDto: PostsPaginationDto) {
+  async getAllPosts(paginationDto: PostsPaginationDto, userId: string) {
     const countDocuments = await this.postModel.find().countDocuments();
     const posts = await this.getPostByFilter({}, paginationDto);
-    const postsArray = await this.postViewModelMapper.createPostArray(posts);
+    const postsArray = await this.postViewModelMapper.createPostArray(
+      posts,
+      userId,
+    );
     return new PostOutputObject(paginationDto, postsArray, countDocuments);
   }
 
   async findPostById(id: string) {
-    const post = await this.postModel.findOne({ id });
-    if (!post) throw new NotFoundException();
-    return this.postViewModelMapper.mapPostToViewModel(post);
+    return this.postModel.findOne({ id });
   }
 
-  async findPostByBlogId(blogId: string, paginationDto: PostsPaginationDto) {
+  async findPostByBlogId(
+    blogId: string,
+    paginationDto: PostsPaginationDto,
+    userId: string,
+  ) {
     const filter = { blogId: blogId };
     const countDocuments = await this.postModel.find(filter).countDocuments();
     const posts = await this.getPostByFilter(filter, paginationDto);
 
-    const postsArray = await this.postViewModelMapper.createPostArray(posts);
+    const postsArray = await this.postViewModelMapper.createPostArray(
+      posts,
+      userId,
+    );
     return new PostOutputObject(paginationDto, postsArray, countDocuments);
   }
 

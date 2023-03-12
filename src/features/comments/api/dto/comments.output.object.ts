@@ -9,7 +9,7 @@ export class CommentsOutputObject {
   items: Comment[];
   constructor(
     paginationDto: CommentsPaginationDto,
-    commentsArray: Comment[],
+    commentsArray: any,
     countDoc: number,
   ) {
     this.pagesCount = Math.ceil(countDoc / paginationDto.pageSize);

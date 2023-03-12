@@ -5,44 +5,71 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { CreatePostDto } from './dto/create.post.dto';
 import { PostService } from '../application/post.service';
 import { UpdatePostDto } from './dto/update.post.dto';
 import { CommentsPaginationDto } from '../../comments/api/dto/comments.pagination.dto';
-import { CommentQueryRepository } from '../../comments/infrastructure/comment-query-repository.service';
+import { CommentQueryRepository } from '../../comments/infrastructure/comment-query-repository';
 import { CommentsOutputObject } from '../../comments/api/dto/comments.output.object';
 import { PostsPaginationDto } from './dto/post.pagination.dto';
+import { BearerAuthGuard } from '../../../guards/bearer-auth.guard';
+import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
+import { CreateCommentDto } from '../../comments/api/dto/create-comment-dto';
+import { CommentService } from '../../comments/application/comments.service';
+import { UserInfo } from '../../../decorators/param/user-info.decorator';
+import { UserInfoDto } from '../../auth/api/dto/user-info.dto';
+import { ReactionStatusDto } from '../../reaction/api/dto/reaction-status.dto';
+import { ReactionService } from '../../reaction/application/reaction.service';
+import { PostViewModelMapper } from '../../../helpers/post.view.model.mapper';
 
 @Controller('posts')
 export class PostController {
   constructor(
-    private postQueryRepository: PostQueryRepository,
-    private postService: PostService,
-    private commentsQueryRepository: CommentQueryRepository,
+    private readonly postQueryRepository: PostQueryRepository,
+    private readonly postService: PostService,
+    private readonly commentsQueryRepository: CommentQueryRepository,
+    private readonly commentsService: CommentService,
+    private readonly reactionService: ReactionService,
+    private readonly postViewModelMapper: PostViewModelMapper,
   ) {}
+
+  @UseGuards(BearerAuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPosts(@Query() postsPaginationDto: PostsPaginationDto) {
-    return await this.postQueryRepository.getAllPosts(postsPaginationDto);
+  async getPosts(
+    @Query() postsPaginationDto: PostsPaginationDto,
+    @UserInfo() user: UserInfoDto,
+  ) {
+    return await this.postQueryRepository.getAllPosts(
+      postsPaginationDto,
+      user.id,
+    );
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   createPost(@Body() createPostDto: CreatePostDto) {
     return this.postService.createPost(createPostDto);
   }
 
+  @UseGuards(BearerAuthGuard)
   @Get(':id')
-  findPostById(@Param('id') id: string) {
-    return this.postQueryRepository.findPostById(id);
+  async findPostById(@Param('id') id: string, @UserInfo() user: UserInfoDto) {
+    const post = await this.postQueryRepository.findPostById(id);
+    if (!post) throw new NotFoundException();
+    return this.postViewModelMapper.mapPostToViewModel(post, user.id);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePostById(
@@ -53,6 +80,7 @@ export class PostController {
     return;
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePostById(@Param('id') id: string) {
@@ -60,16 +88,52 @@ export class PostController {
     return;
   }
 
+  @UseGuards(BearerAuthGuard)
   @Get(':postId/comments')
   @HttpCode(HttpStatus.OK)
   async findCommentsForCertainPost(
     @Param('postId') postId: string,
     @Query() commentsPaginationDto: CommentsPaginationDto,
+    @UserInfo() user: UserInfoDto,
   ): Promise<CommentsOutputObject> {
-    await this.postQueryRepository.findPostById(postId);
-    return await this.commentsQueryRepository.findCommentsByPostId(
-      postId,
+    const post = await this.postQueryRepository.findPostById(postId);
+    if (!post) throw new NotFoundException();
+    return this.commentsQueryRepository.findCommentsByPostId(
+      post.id,
       commentsPaginationDto,
+      user.id,
+    );
+  }
+
+  @UseGuards(BearerAuthGuard)
+  @Post(':postId/comments')
+  async createCommentForPost(
+    @Param('postId') postId: string,
+    @Body() createCommentDto: CreateCommentDto,
+    @UserInfo() userInfo: UserInfoDto,
+  ) {
+    return this.commentsService.createCommentForCertainPost(
+      postId,
+      createCommentDto.content,
+      userInfo,
+    );
+  }
+
+  @UseGuards(BearerAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(':postId/like-status')
+  async createReactionOnPost(
+    @Param('postId') postId: string,
+    @Body() likeStatusDto: ReactionStatusDto,
+    @UserInfo() userInfo: UserInfoDto,
+  ) {
+    const post = await this.postQueryRepository.findPostById(postId);
+    if (!post) throw new NotFoundException();
+    return this.reactionService.updateReactionByParenId(
+      postId,
+      userInfo.id,
+      userInfo.login,
+      likeStatusDto.likeStatus,
     );
   }
 }

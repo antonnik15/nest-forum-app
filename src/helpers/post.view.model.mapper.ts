@@ -9,10 +9,16 @@ export class PostViewModelMapper {
   constructor(
     @InjectModel(Like.name) private likesModel: Model<LikeDocument>,
   ) {}
-  async createPostArray(postArray: Post[]) {
-    return Promise.all(postArray.map((p) => this.mapPostToViewModel(p)));
+  async createPostArray(postArray: Post[], userId: string) {
+    return Promise.all(
+      postArray.map((p) => this.mapPostToViewModel(p, userId)),
+    );
   }
-  async mapPostToViewModel(post: Post) {
+  async mapPostToViewModel(post: Post, userId: string) {
+    const myReaction = await this.likesModel.findOne({
+      parentId: post.id,
+      userId,
+    });
     return {
       id: post.id,
       title: post.title,
@@ -26,7 +32,7 @@ export class PostViewModelMapper {
         dislikesCount: await this.likesModel.countDocuments({
           parentId: post.id,
         }),
-        myStatus: 'None',
+        myStatus: myReaction.likesStatus ?? 'None',
         newestLikes: [],
       },
     };

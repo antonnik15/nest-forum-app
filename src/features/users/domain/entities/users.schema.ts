@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { randomUUID } from 'crypto';
 
-@Schema()
+@Schema({ _id: false })
 class AccountData {
   @Prop({ required: true, unique: true, type: String })
   login: string;
@@ -23,7 +23,7 @@ class AccountData {
 
 const AccountDataSchema = SchemaFactory.createForClass(AccountData);
 
-@Schema()
+@Schema({ _id: false })
 class EmailInfo {
   @Prop({ required: true, type: Boolean, default: false })
   isConfirmed: boolean;
@@ -33,6 +33,17 @@ class EmailInfo {
 }
 
 const EmailInfoSchema = SchemaFactory.createForClass(EmailInfo);
+
+@Schema({ _id: false, id: false, versionKey: false })
+class PasswordRecoveryInfo {
+  @Prop({ required: true, type: Boolean, default: true })
+  recoveryStatus: boolean;
+  @Prop({ type: String })
+  recoveryCode: string;
+}
+
+const PasswordRecoverySchema =
+  SchemaFactory.createForClass(PasswordRecoveryInfo);
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -51,6 +62,9 @@ export class User {
 
   @Prop({ required: true, type: EmailInfoSchema })
   emailInfo: EmailInfo;
+
+  @Prop({ required: true, type: PasswordRecoverySchema })
+  passwordRecoveryInfo: PasswordRecoveryInfo;
 
   createUserViewModel() {
     return {

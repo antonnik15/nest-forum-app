@@ -11,10 +11,10 @@ import { PostService } from './features/posts/application/post.service';
 import { TestingService } from './features/testing/application/testing.service';
 import { UserService } from './features/users/application/user.service';
 import { BlogQueryRepository } from './features/blogs/infrastructure/blog-query-repository';
-import { CommentQueryRepository } from './features/comments/infrastructure/comment-query-repository.service';
+import { CommentQueryRepository } from './features/comments/infrastructure/comment-query-repository';
 import { PostQueryRepository } from './features/posts/infrastructure/post.query.repository';
 import { UserQueryRepository } from './features/users/infrastructure/user-query-repository';
-import { BlogRepository } from './features/blogs/infrastructure/blog-repository.service';
+import { BlogRepository } from './features/blogs/infrastructure/blog-repository';
 import { PostRepository } from './features/posts/infrastructure/post.repository';
 import { UserRepository } from './features/users/infrastructure/user-repository';
 import { Blog, BlogSchema } from './features/blogs/domain/entities/blog.shema';
@@ -38,6 +38,25 @@ import { AuthService } from './features/auth/application/auth.service';
 import { UserEmailExistValidator } from './validators/user-email-exist.validator';
 import { EmailModule } from './features/email/email.module';
 import { ConfigModule } from '@nestjs/config';
+import { JwtService } from './features/auth/application/jwt.service';
+import {
+  Session,
+  SessionSchema,
+} from './features/sessions/domain/entities/session.schema';
+import { CommentRepository } from './features/comments/infrastructure/comment-repository';
+import { ReactionRepository } from './features/reaction/infrastructure/reaction-repository';
+import { ReactionService } from './features/reaction/application/reaction.service';
+import {
+  Reaction,
+  ReactionSchema,
+} from './features/reaction/domain/entities/reaction.schema';
+import { SessionController } from './features/sessions/api/session.controller';
+import { SessionService } from './features/sessions/application/session.service';
+import { SessionQueryRepository } from './features/sessions/infrastructure/session.query.repository';
+import { SessionRepository } from './features/sessions/infrastructure/session.repository';
+import { BasicAuthGuard } from './guards/basic-auth.guard';
+import { BearerAuthGuard } from './guards/bearer-auth.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 const controllers = [
   BlogsController,
@@ -46,7 +65,10 @@ const controllers = [
   TestingController,
   UserController,
   AuthController,
+  SessionController,
 ];
+
+const guards = [BasicAuthGuard, BearerAuthGuard, RefreshTokenGuard];
 
 const services = [
   BlogsService,
@@ -55,6 +77,9 @@ const services = [
   TestingService,
   UserService,
   AuthService,
+  JwtService,
+  ReactionService,
+  SessionService,
 ];
 
 const queryRepositories = [
@@ -62,6 +87,7 @@ const queryRepositories = [
   CommentQueryRepository,
   PostQueryRepository,
   UserQueryRepository,
+  SessionQueryRepository,
 ];
 
 const repositories = [
@@ -69,6 +95,9 @@ const repositories = [
   PostRepository,
   UserRepository,
   TestingRepository,
+  CommentRepository,
+  ReactionRepository,
+  SessionRepository,
   ...queryRepositories,
 ];
 
@@ -78,12 +107,15 @@ const mongooseModels = [
   { name: Like.name, schema: LikeSchema },
   { name: Post.name, schema: PostSchema },
   { name: User.name, schema: UserSchema },
+  { name: Session.name, schema: SessionSchema },
+  { name: Reaction.name, schema: ReactionSchema },
 ];
 
 const mappers = [
   UserViewModelMapper,
   CommentViewModelMapper,
   PostViewModelMapper,
+  CommentViewModelMapper,
 ];
 
 const validators = [UserLoginExistValidator, UserEmailExistValidator];
@@ -92,10 +124,16 @@ const validators = [UserLoginExistValidator, UserEmailExistValidator];
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: 'nest' }),
     MongooseModule.forFeature(mongooseModels),
-    EmailModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    EmailModule,
   ],
-  controllers: controllers,
-  providers: [...services, ...repositories, ...mappers, ...validators],
+  controllers: [...controllers],
+  providers: [
+    ...guards,
+    ...repositories,
+    ...services,
+    ...mappers,
+    ...validators,
+  ],
 })
 export class AppModule {}
