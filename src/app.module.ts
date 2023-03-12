@@ -22,7 +22,6 @@ import {
   Comment,
   CommentSchema,
 } from './features/comments/domain/comment.schema';
-import { Like, LikeSchema } from './features/likes/like.schema';
 import { Post, PostSchema } from './features/posts/domain/entities/post.schema';
 import {
   User,
@@ -57,6 +56,8 @@ import { SessionRepository } from './features/sessions/infrastructure/session.re
 import { BasicAuthGuard } from './guards/basic-auth.guard';
 import { BearerAuthGuard } from './guards/bearer-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { GetUserIdFromBearerToken } from './guards/get-userId-from-bearer-token.guard';
+import { TrimValidator } from './validators/trim.validator';
 
 const controllers = [
   BlogsController,
@@ -68,7 +69,12 @@ const controllers = [
   SessionController,
 ];
 
-const guards = [BasicAuthGuard, BearerAuthGuard, RefreshTokenGuard];
+const guards = [
+  BasicAuthGuard,
+  BearerAuthGuard,
+  RefreshTokenGuard,
+  GetUserIdFromBearerToken,
+];
 
 const services = [
   BlogsService,
@@ -104,7 +110,6 @@ const repositories = [
 const mongooseModels = [
   { name: Blog.name, schema: BlogSchema },
   { name: Comment.name, schema: CommentSchema },
-  { name: Like.name, schema: LikeSchema },
   { name: Post.name, schema: PostSchema },
   { name: User.name, schema: UserSchema },
   { name: Session.name, schema: SessionSchema },
@@ -118,7 +123,11 @@ const mappers = [
   CommentViewModelMapper,
 ];
 
-const validators = [UserLoginExistValidator, UserEmailExistValidator];
+const validators = [
+  UserLoginExistValidator,
+  UserEmailExistValidator,
+  TrimValidator,
+];
 
 @Module({
   imports: [

@@ -17,7 +17,7 @@ export class ReactionService {
     const newReaction: Reaction = {
       parentId,
       userId,
-      userLogin,
+      login: userLogin,
       reactionStatus,
       addedAt: new Date().toISOString(),
     };

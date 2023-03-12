@@ -18,7 +18,7 @@ export class Reaction {
   userId: string;
 
   @Prop({ required: true, type: String })
-  userLogin: string;
+  login: string;
 
   @Prop({ required: true, type: String, enum: ReactionStatusEnum })
   reactionStatus: ReactionStatusEnum;
