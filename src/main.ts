@@ -29,7 +29,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.use(cookieParser);
+  app.use(cookieParser());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(port, () => {
     console.log(`App start on ${port} port`);
