@@ -58,6 +58,7 @@ import { BearerAuthGuard } from './guards/bearer-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { GetUserIdFromBearerToken } from './guards/get-userId-from-bearer-token.guard';
 import { TrimValidator } from './validators/trim.validator';
+import { BlogExistValidator } from './validators/blog-exist.validator';
 
 const controllers = [
   BlogsController,
@@ -127,6 +128,7 @@ const validators = [
   UserLoginExistValidator,
   UserEmailExistValidator,
   TrimValidator,
+  BlogExistValidator,
 ];
 
 @Module({
