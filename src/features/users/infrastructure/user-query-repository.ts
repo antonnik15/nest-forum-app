@@ -32,9 +32,9 @@ export class UserQueryRepository {
   }
 
   private createFilterForSearchingUser(queryObj: UserPaginationDto) {
-    const filter = { $or: [] };
-
+    let filter;
     if (queryObj.searchEmailTerm) {
+      filter = { $or: [] };
       filter.$or.push({
         'accountData.email': {
           $regex: queryObj.searchEmailTerm,

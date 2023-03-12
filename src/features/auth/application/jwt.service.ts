@@ -28,7 +28,7 @@ export class JwtService {
   }
 
   getIatFromRefreshToken(refreshToken: string) {
-    const payload: any = jwt.decode(refreshToken);
+    const payload: any = jwt.verify(refreshToken, this.refreshTokenSecret);
     return new Date(payload.iat * 1000).toISOString();
   }
 

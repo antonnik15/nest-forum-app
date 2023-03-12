@@ -4,7 +4,7 @@ import { BlogsController } from './features/blogs/api/blogs.controller';
 import { CommentController } from './features/comments/api/commentController';
 import { PostController } from './features/posts/api/postController';
 import { TestingController } from './features/testing/api/testing.controller';
-import { UserController } from './features/users/api/userController';
+import { UserController } from './features/users/api/user.controller';
 import { BlogsService } from './features/blogs/application/blogs.service';
 import { CommentService } from './features/comments/application/comments.service';
 import { PostService } from './features/posts/application/post.service';

@@ -27,7 +27,7 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async getAllUsers(@Query() userPaginationDto: UserPaginationDto) {
-    return await this.usersQueryRepository.getAllUsers(userPaginationDto);
+    return this.usersQueryRepository.getAllUsers(userPaginationDto);
   }
 
   @UseGuards(BasicAuthGuard)
