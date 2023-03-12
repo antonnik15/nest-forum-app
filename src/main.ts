@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception-filters/http.exception.filter';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      stopAtFirstError: false,
+      stopAtFirstError: true,
       exceptionFactory: (errors) => {
         const errorsForResponse = [];
         errors.map((e) => {
@@ -28,6 +29,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.use(cookieParser);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(port, () => {
     console.log(`App start on ${port} port`);
