@@ -41,7 +41,7 @@ export class AuthController {
       userAgent,
       ip,
     );
-    res.cookie('refreshToken', refreshToken);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
     return { accessToken };
   }
 
@@ -57,7 +57,10 @@ export class AuthController {
       const { accessToken, refreshToken } = await this.authService.refreshToken(
         token,
       );
-      res.cookie('refreshToken', refreshToken, {});
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: false,
+      });
       return { accessToken };
     } catch (e) {
       throw new UnauthorizedException();
