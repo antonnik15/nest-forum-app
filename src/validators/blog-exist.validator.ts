@@ -12,8 +12,7 @@ export class BlogExistValidator implements ValidatorConstraintInterface {
   async validate(blogId: string): Promise<boolean> {
     try {
       const blog = await this.blogQueryRepository.getBlogById(blogId);
-      if (!blog) return false;
-      return true;
+      return !!blog;
     } catch (err) {
       return false;
     }

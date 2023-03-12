@@ -20,7 +20,7 @@ export class CommentViewModelMapper {
   async mapCommentToViewModel(comment: Comment, userId: string | null) {
     let myReaction;
     if (userId) {
-      myReaction = this.reactionModel.findOne({
+      myReaction = await this.reactionModel.findOne({
         parentId: comment.id,
         userId,
       });
