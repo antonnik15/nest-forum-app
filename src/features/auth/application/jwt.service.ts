@@ -14,13 +14,13 @@ export class JwtService {
 
   signAccessAndRefreshToken(userId: string, deviceId: string) {
     const accessToken = jwt.sign({ userId, deviceId }, this.accessTokenSecret, {
-      expiresIn: '5m',
+      expiresIn: '10s',
     });
     const refreshToken = jwt.sign(
       { userId, deviceId },
       this.refreshTokenSecret,
       {
-        expiresIn: '10m',
+        expiresIn: '20s',
       },
     );
 
