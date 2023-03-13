@@ -59,6 +59,9 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { GetUserIdFromBearerToken } from './guards/get-userId-from-bearer-token.guard';
 import { TrimValidator } from './validators/trim.validator';
 import { BlogExistValidator } from './validators/blog-exist.validator';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerConfig } from './config/throttler.config';
 
 const controllers = [
   BlogsController,
@@ -75,6 +78,7 @@ const guards = [
   BearerAuthGuard,
   RefreshTokenGuard,
   GetUserIdFromBearerToken,
+  { provide: APP_GUARD, useClass: ThrottlerGuard },
 ];
 
 const services = [
@@ -136,6 +140,7 @@ const validators = [
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: 'nest' }),
     MongooseModule.forFeature(mongooseModels),
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRootAsync({ useClass: ThrottlerConfig }),
     EmailModule,
   ],
   controllers: [...controllers],
