@@ -5,10 +5,12 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exception-filters/http.exception.filter';
 import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const port = process.env.PORT || 3000;
+  app.set('trust proxy', 1);
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
