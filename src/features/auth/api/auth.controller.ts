@@ -23,11 +23,14 @@ import { NewPasswordDto } from './dto/new-password-dto';
 import { BearerAuthGuard } from '../../../guards/bearer-auth.guard';
 import { UserInfoDto } from './dto/user-info.dto';
 import { UserInfo } from '../../../decorators/param/user-info.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @SkipThrottle(false)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -67,6 +70,7 @@ export class AuthController {
     }
   }
 
+  @SkipThrottle(false)
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationUserDto) {
@@ -82,12 +86,14 @@ export class AuthController {
     return;
   }
 
+  @SkipThrottle(false)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   confirmRegistration(@Body() confirmationDto: RegistrationConfirmationDto) {
     return this.authService.confirmUserEmail(confirmationDto.code);
   }
 
+  @SkipThrottle(false)
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(
@@ -96,12 +102,14 @@ export class AuthController {
     return await this.authService.resendRegistrationEmail(resendingDto.email);
   }
 
+  @SkipThrottle(false)
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(@Body() recoveryPasswordDto: RecoveryPasswordDto) {
     return this.authService.recoveryPassword(recoveryPasswordDto.email);
   }
 
+  @SkipThrottle(false)
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() newPasswordDto: NewPasswordDto) {

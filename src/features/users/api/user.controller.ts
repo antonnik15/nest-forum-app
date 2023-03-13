@@ -15,7 +15,9 @@ import { UserQueryRepository } from '../infrastructure/user-query-repository';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UserService } from '../application/user.service';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('users')
 export class UserController {
   constructor(

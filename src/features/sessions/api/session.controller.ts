@@ -14,7 +14,9 @@ import { SessionService } from '../application/session.service';
 import { RefreshTokenGuard } from '../../../guards/refresh-token.guard';
 import { RefreshTokenJwtPayload } from '../../../decorators/param/refresh-token-jwt-payload.decorator';
 import { RefreshTokenJwtPayloadDto } from '../../auth/api/dto/refresh-token-jwt-payload.dto';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('security/devices')
 export class SessionController {
   constructor(

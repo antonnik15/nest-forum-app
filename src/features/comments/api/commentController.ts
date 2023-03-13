@@ -20,7 +20,9 @@ import { ReactionStatusDto } from '../../reaction/api/dto/reaction-status.dto';
 import { CommentViewModelMapper } from '../../../helpers/comment.view.model.mapper';
 import { GetUserIdFromBearerToken } from '../../../guards/get-userId-from-bearer-token.guard';
 import { UserId } from '../../../decorators/param/user-id.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('comments')
 export class CommentController {
   constructor(

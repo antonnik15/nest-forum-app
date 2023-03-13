@@ -27,7 +27,9 @@ import { PostsPaginationDto } from '../../posts/api/dto/post.pagination.dto';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { GetUserIdFromBearerToken } from '../../../guards/get-userId-from-bearer-token.guard';
 import { UserId } from '../../../decorators/param/user-id.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('blogs')
 export class BlogsController {
   constructor(
